@@ -26,6 +26,12 @@ sudo pip3 install --upgrade requests
 sudo pip3 install docker-compose
 ```
 
+`Emacs`テキストエディタもインストールしておく。
+
+```shell
+sudo apt install emacs
+```
+
 ## DockerからGUIアプリが使えるようにする
 
 [Dockerコンテナ内のX11 GUIアプリを使用する](https://qiita.com/nobrin/items/59b9b645e5595365c4ac)を参照。
@@ -35,6 +41,16 @@ sudo pip3 install docker-compose
 ```shell
 xhost +local:
 ```
+
+もしも、自動的にこの設定をしたい場合は`/etc/profile`の末尾に`xhost +local:`を追記する。
+
+```text
+sudo emacs /etc/profile -nw
+# テキストエディタが開くので、末尾に「xhost +local:」と追記。
+```
+
+追記できたら、`Ctrl+X`を押して離して、`Ctrl+S`で保存する。
+さらに`Ctrl+X`を押して離して、`Ctrl+C`で`Emacs`を終了させる。
 
 ## 起動
 
