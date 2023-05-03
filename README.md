@@ -202,6 +202,6 @@ sudo reboot
 
 ## 参考文献
 
-[Raspberry Pi 4でDockerのインストール方法 2023年度版](https://raspida.com/rpi4-docker-install)
-[Dockerを用いてRaspberryPi3上でROSを使ってみる](https://qiita.com/Spritaro/items/92e504023c2653595e79)
-[Docker コンテナ内のGUIアプリを起動してホスト側に表示する](https://zukucode.com/2019/07/docker-gui-show.html)
+1. [Raspberry Pi 4でDockerのインストール方法 2023年度版](https://raspida.com/rpi4-docker-install)
+2. [Dockerを用いてRaspberryPi3上でROSを使ってみる](https://qiita.com/Spritaro/items/92e504023c2653595e79)
+3. [Docker コンテナ内のGUIアプリを起動してホスト側に表示する](https://zukucode.com/2019/07/docker-gui-show.html)
