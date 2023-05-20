@@ -10,6 +10,7 @@
 
 ```shell
 sudo apt update && sudo apt upgrade -y
+sudo pip3 install --upgrade pip
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 sudo usermod -aG docker ${USER}
@@ -19,9 +20,10 @@ sudo pip3 install docker-compose
 `docker-compose`インストール時にエラーが発生した場合は以下を実行する。
 
 ```shell
-sudo apt purge python3-openssl 
+sudo apt purge python3-openssl -y
 sudo pip3 uninstall pyopenssl
 sudo pip3 install pyopenssl
+sudo pip3 install rust
 sudo pip3 install --upgrade requests
 sudo pip3 install docker-compose
 ```
@@ -90,7 +92,7 @@ sudo apt install python-is-python3 -y
 exit # 一旦コンテナを抜ける。他にもコンテナに入っているターミナルがあれば全てexitする。
 ```
 
-次のコマンドでRVizの起動をテストする。以下いずれのコマンドも`./attach.sh`後の**コンテナ内で**実行すること。
+次のコマンドでGUIをテストする。以下いずれのコマンドも`./attach.sh`後の**コンテナ内で**実行すること。
 
 ```shell
 xeyes
