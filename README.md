@@ -190,14 +190,13 @@ Current thread 0xb6feb460 (most recent call first):
 `apt upgrade`後にモニタが映らなくなることがある。
 
 - [reTerminalを使ってみる！](https://pocketgriffon.hatenablog.com/entry/2022/03/13/010200)
-
-[reTerminalのCompute Module 4を入れ替える](https://lab.seeed.co.jp/entry/2021/07/13/120000)の「ドライバーをインストールする」を参照。
+- [reTerminal E10-1 instillation failed](https://forum.seeedstudio.com/t/reterminal-e10-1-instillation-failed/270468/3)
+- [reTerminalのCompute Module 4を入れ替える](https://lab.seeed.co.jp/entry/2021/07/13/120000)の「ドライバーをインストールする」
 
 ```shell
+echo arm_64bit=0 | sudo tee -a /boot/config.txt # 一回だけ
 git clone --depth 1 https://github.com/Seeed-Studio/seeed-linux-dtoverlays
 cd seeed-linux-dtoverlays
-git fetch --tags
-git checkout 2022-05-29-reTerminal-V1.9 # 最新版ではビルドできない場合がある。
 sudo ./scripts/reTerminal.sh
 sudo reboot
 ```
