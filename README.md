@@ -34,38 +34,79 @@ sudo pip3 install docker-compose
 sudo apt install emacs
 ```
 
-## DockerからGUIアプリが使えるようにする
+## 不要なDockerコンテナを必要に応じて破棄する
 
-[Dockerコンテナ内のX11 GUIアプリを使用する](https://qiita.com/nobrin/items/59b9b645e5595365c4ac)を参照。
+基本的には環境構築時に一度だけ実行すればよい。
 
-ホスト（Raspberry Pi）側で以下を実行する。これは`Raspberry Pi`を起動するたびに必要。
+- 停止しているコンテナを全て破棄する場合
 
 ```shell
-xhost +local:
+docker system prune
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+Are you sure you want to continue? [y/N] y # yを入力してエンター
 ```
 
-もしも、自動的にこの設定をしたい場合は`/etc/profile`の末尾に`xhost +local:`を追記する。
+- コンテナを選択して破棄する場合
 
-```text
-sudo emacs /etc/profile -nw
-# テキストエディタが開くので、末尾に「xhost +local:」と追記。
+```shell
+docker ps -a --format "{{.ID}} {{.Names}}"
+bcc31298065b ros1_noetic # 先頭の半角英数字文字列がコンテナID
+docke rm bcc31298065b # 指定したIDのコンテナが破棄される
 ```
 
-追記できたら、`Ctrl+X`を押して離して、`Ctrl+S`で保存する。
-さらに`Ctrl+X`を押して離して、`Ctrl+C`で`Emacs`を終了させる。
+## （補足）不要なDockerイメージを破棄したい場合
 
-## 起動
+```shell
+docker images
+REPOSITORY                        TAG       IMAGE ID       CREATED          SIZE
+ros                               noetic    c1ca36166d90   2 months ago     932MB
+# 削除したいIDを指定して以下のコマンドを実行する
+docker rmi c1ca36166d90
+Untagged: ros:noetic
+```
 
-ホスト側で以下を実行して`Docker`コンテナを起動する。
+## 古いROSのワークスペースを削除する
+
+環境構築時に一度だけ実行すればよい。
+
+```shell
+cd
+sudo rm -fr catkin_ws
+```
+
+## 仮想環境の構築（Dockerコンテナの作成）
+
+ホスト側で以下を実行して`Docker`コンテナを作成する。
 
 ```shell
 cd 
+rm -fr docker_ros_noetic
 git clone https://github.com/KMiyawaki/docker_ros_noetic.git
 cd docker_ros_noetic
-./docker_start.sh
+./attach.sh
+ros1_noetic is not running. Try to start.
+Making /home/pi/catkin_ws/src
+kmiyawaki20/ros1_noetic_user_pi does not exists. 
+Input password for user 'pi' > # Linuxのパスワードを入力してエンターを押す
+'XXXXXX' Is that a correct password ?(Y/N) y # 正しければyを押す。間違っていればnを押して終了させる。
+OK. Start to build image.
+#1 [internal] load build definition from Dockerfile.useradd1
+Creating ros1_noetic ... done
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+pi@raspberrypi:~$ # この時点でコンテナ（仮想環境に入っている）
+pi@raspberrypi:~$ exit # このコマンドで仮想環境から抜ける
+exit 
+pi@raspberrypi:~/docker_ros_noetic $ 
 ```
 
-以下を実行して、コンテナ内で作業する。
+以降は以下を実行して、コンテナ内で作業する。
 
 ```shell
 cd ~/docker_ros_noetic
@@ -73,24 +114,6 @@ cd ~/docker_ros_noetic
 ```
 
 ### コンテナの初期設定
-
-必要なパッケージをインストールする。以下は、`./attach.sh`実行後の**コンテナ内**での作業であることに注意。
-
-コマンドターミナルのプロンプトが`root@raspberrypi:~#`となっていれば良い。
-
-```shell
-cd
-sudo apt update && sudo apt install git -y
-git clone https://github.com/KMiyawaki/setup_robot_programming
-cd setup_robot_programming
-./init_workspace.sh
-./install_ros_packages.sh
-sudo apt install iputils-ping net-tools x11-apps -y
-sudo apt install ros-noetic-media-export -y
-sudo apt install python-is-python3 -y
-./upgrade_packages.sh
-exit # 一旦コンテナを抜ける。他にもコンテナに入っているターミナルがあれば全てexitする。
-```
 
 次のコマンドでGUIをテストする。以下いずれのコマンドも`./attach.sh`後の**コンテナ内で**実行すること。
 
@@ -101,6 +124,27 @@ xeyes
 次のように、目玉のマークが表示されれば成功。`Ctrl＋C`キーで終了させる。
 
 ![2023-04-27_192138.png](./images/2023-04-27_192138.png)
+
+`ROS`のワークスペースを設定し、必要なパッケージをインストールする。
+以下は、`./attach.sh`実行後の**コンテナ内**での作業であることに注意。
+
+```shell
+cd
+cd setup_robot_programming
+./init_workspace.sh
+**Making workspace. Target ros-noetic**
+Creating symlink "/home/pi/catkin_ws/src/CMakeLists.txt" pointing to "/opt/ros/noetic/share/catkin/cmake/toplevel.cmake"
+# ・・・省略・・・
+./make_beginner_tutorials.sh
+Created file beginner_tutorials/package.xml
+Created file beginner_tutorials/CMakeLists.txt
+Created folder beginner_tutorials/include/beginner_tutorials
+# ・・・省略・・・
+./upgrade_packages.sh
+Get:1 http://ports.ubuntu.com/ubuntu-ports focal InRelease [265 kB]  
+# ・・・省略・・・
+exit # 一旦コンテナを抜ける。他にもコンテナに入っているターミナルがあれば全てexitする。
+```
 
 `roscore`を起動する。`./attach.sh`したコンテナ内で実行すること。
 
